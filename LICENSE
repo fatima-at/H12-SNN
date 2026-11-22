@@ -1,0 +1,41 @@
+Copyright (c) 2026 Fatima Atwi, Constant Roux, Christian Bergaud, Olivier Stasse
+LAAS-CNRS, Université de Toulouse, CNRS, Toulouse, France
+
+This work is licensed under the Creative Commons
+Attribution-NonCommercial-NoDerivatives 4.0 International License
+(CC BY-NC-ND 4.0).
+
+Full licence text: https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode
+Summary:          https://creativecommons.org/licenses/by-nc-nd/4.0/
+
+You are free to share this material (copy and redistribute it in any medium
+or format) provided that you give appropriate credit and link to the licence.
+You may not use the material for commercial purposes, and if you remix,
+transform or build upon it you may not distribute the modified material.
+
+
+SCOPE
+
+The licence above applies to material created by the authors for this page:
+
+  - index.html and style.css, including the inline SVG diagrams
+  - assets/clips/*.webm (simulation renders and robot footage)
+
+
+MATERIAL NOT COVERED BY THIS LICENCE
+
+The following is included for scholarly reference and is governed by its own
+terms. It is not sublicensed here and must not be reused on the basis of the
+licence above:
+
+  - The abstract reproduced on this page is taken from the accepted paper,
+    "Controlling the Humanoid Robot H1-2 With a Simulated Biologically
+    Plausible Network" (IEEE-RAS International Conference on Humanoid Robots,
+    2026). Copyright in the published article rests with the IEEE. The
+    author version is available at https://hal.science/hal-05860566
+
+  - assets/hardware.png is a figure from that paper and is subject to the
+    same terms.
+
+  - assets/laas-cnrs.png is the trademark of LAAS-CNRS. It is used here to
+    identify the authors' institution and is not licensed for reuse.

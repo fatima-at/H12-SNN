@@ -1,0 +1,579 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Controlling the Humanoid Robot H1-2 With a Simulated Biologically Plausible Network</title>
+<meta name="description" content="IEEE-RAS Humanoids 2026. A spiking network grounded in a 3D neural culture, trained by biologically plausible learning rules, controls the Unitree H1-2.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="accent-bar"></div>
+
+<nav class="topnav">
+  <div class="wrap topnav-inner">
+    <ul class="topnav-links">
+      <li><a href="#overview">Overview</a></li>
+      <li><a href="#approach">Approach</a></li>
+      <li><a href="#schemes">Learning rules</a></li>
+      <li><a href="#results">Results</a></li>
+      <li><a href="#experiments">Experiments</a></li>
+      <li><a class="nav-pdf" href="https://hal.science/hal-05860566">Paper</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+    <div class="hero-deco left">
+      <svg class="hero-net" viewBox="0 0 240 460" aria-hidden="true" focusable="false">
+        <line x1="27.0" y1="50.5" x2="94.7" y2="27.5"/>
+        <line x1="27.0" y1="50.5" x2="87.8" y2="120.8"/>
+        <line x1="25.4" y1="178.5" x2="87.8" y2="120.8"/>
+        <line x1="25.4" y1="178.5" x2="102.5" y2="227.0"/>
+        <line x1="31.3" y1="288.9" x2="102.5" y2="227.0"/>
+        <line x1="31.3" y1="288.9" x2="90.5" y2="307.0"/>
+        <line x1="34.1" y1="384.8" x2="90.5" y2="307.0"/>
+        <line x1="34.1" y1="384.8" x2="105.0" y2="419.1"/>
+        <line x1="94.7" y1="27.5" x2="155.9" y2="60.6"/>
+        <line x1="87.8" y1="120.8" x2="155.9" y2="60.6"/>
+        <line x1="87.8" y1="120.8" x2="148.9" y2="191.6"/>
+        <line x1="102.5" y1="227.0" x2="148.9" y2="191.6"/>
+        <line x1="102.5" y1="227.0" x2="153.8" y2="301.8"/>
+        <line x1="90.5" y1="307.0" x2="153.8" y2="301.8"/>
+        <line x1="90.5" y1="307.0" x2="150.4" y2="388.3"/>
+        <line x1="105.0" y1="419.1" x2="150.4" y2="388.3"/>
+        <line x1="155.9" y1="60.6" x2="218.3" y2="38.3"/>
+        <line x1="155.9" y1="60.6" x2="213.6" y2="125.2"/>
+        <line x1="148.9" y1="191.6" x2="213.6" y2="125.2"/>
+        <line x1="148.9" y1="191.6" x2="209.4" y2="235.6"/>
+        <line x1="153.8" y1="301.8" x2="209.4" y2="235.6"/>
+        <line x1="153.8" y1="301.8" x2="203.3" y2="323.9"/>
+        <line x1="153.8" y1="301.8" x2="206.1" y2="396.4"/>
+        <line x1="150.4" y1="388.3" x2="203.3" y2="323.9"/>
+        <line x1="150.4" y1="388.3" x2="206.1" y2="396.4"/>
+        <circle cx="27.0" cy="50.5" r="2.6"/>
+        <circle cx="25.4" cy="178.5" r="2.6"/>
+        <circle cx="31.3" cy="288.9" r="2.6"/>
+        <circle cx="34.1" cy="384.8" r="2.6"/>
+        <circle cx="94.7" cy="27.5" r="3.4"/>
+        <circle cx="87.8" cy="120.8" r="3.4"/>
+        <circle cx="102.5" cy="227.0" r="3.4"/>
+        <circle cx="90.5" cy="307.0" r="3.4"/>
+        <circle cx="105.0" cy="419.1" r="3.4"/>
+        <circle cx="155.9" cy="60.6" r="3.4"/>
+        <circle cx="148.9" cy="191.6" r="3.4"/>
+        <circle cx="153.8" cy="301.8" r="3.4"/>
+        <circle cx="150.4" cy="388.3" r="3.4"/>
+        <circle cx="218.3" cy="38.3" r="2.6"/>
+        <circle cx="213.6" cy="125.2" r="2.6"/>
+        <circle cx="209.4" cy="235.6" r="2.6"/>
+        <circle cx="203.3" cy="323.9" r="2.6"/>
+        <circle cx="206.1" cy="396.4" r="2.6"/>
+      </svg>
+    </div>
+    <div class="hero-deco right">
+      <svg class="hero-net" viewBox="0 0 240 460" aria-hidden="true" focusable="false">
+        <line x1="27.0" y1="50.5" x2="94.7" y2="27.5"/>
+        <line x1="27.0" y1="50.5" x2="87.8" y2="120.8"/>
+        <line x1="25.4" y1="178.5" x2="87.8" y2="120.8"/>
+        <line x1="25.4" y1="178.5" x2="102.5" y2="227.0"/>
+        <line x1="31.3" y1="288.9" x2="102.5" y2="227.0"/>
+        <line x1="31.3" y1="288.9" x2="90.5" y2="307.0"/>
+        <line x1="34.1" y1="384.8" x2="90.5" y2="307.0"/>
+        <line x1="34.1" y1="384.8" x2="105.0" y2="419.1"/>
+        <line x1="94.7" y1="27.5" x2="155.9" y2="60.6"/>
+        <line x1="87.8" y1="120.8" x2="155.9" y2="60.6"/>
+        <line x1="87.8" y1="120.8" x2="148.9" y2="191.6"/>
+        <line x1="102.5" y1="227.0" x2="148.9" y2="191.6"/>
+        <line x1="102.5" y1="227.0" x2="153.8" y2="301.8"/>
+        <line x1="90.5" y1="307.0" x2="153.8" y2="301.8"/>
+        <line x1="90.5" y1="307.0" x2="150.4" y2="388.3"/>
+        <line x1="105.0" y1="419.1" x2="150.4" y2="388.3"/>
+        <line x1="155.9" y1="60.6" x2="218.3" y2="38.3"/>
+        <line x1="155.9" y1="60.6" x2="213.6" y2="125.2"/>
+        <line x1="148.9" y1="191.6" x2="213.6" y2="125.2"/>
+        <line x1="148.9" y1="191.6" x2="209.4" y2="235.6"/>
+        <line x1="153.8" y1="301.8" x2="209.4" y2="235.6"/>
+        <line x1="153.8" y1="301.8" x2="203.3" y2="323.9"/>
+        <line x1="153.8" y1="301.8" x2="206.1" y2="396.4"/>
+        <line x1="150.4" y1="388.3" x2="203.3" y2="323.9"/>
+        <line x1="150.4" y1="388.3" x2="206.1" y2="396.4"/>
+        <circle cx="27.0" cy="50.5" r="2.6"/>
+        <circle cx="25.4" cy="178.5" r="2.6"/>
+        <circle cx="31.3" cy="288.9" r="2.6"/>
+        <circle cx="34.1" cy="384.8" r="2.6"/>
+        <circle cx="94.7" cy="27.5" r="3.4"/>
+        <circle cx="87.8" cy="120.8" r="3.4"/>
+        <circle cx="102.5" cy="227.0" r="3.4"/>
+        <circle cx="90.5" cy="307.0" r="3.4"/>
+        <circle cx="105.0" cy="419.1" r="3.4"/>
+        <circle cx="155.9" cy="60.6" r="3.4"/>
+        <circle cx="148.9" cy="191.6" r="3.4"/>
+        <circle cx="153.8" cy="301.8" r="3.4"/>
+        <circle cx="150.4" cy="388.3" r="3.4"/>
+        <circle cx="218.3" cy="38.3" r="2.6"/>
+        <circle cx="213.6" cy="125.2" r="2.6"/>
+        <circle cx="209.4" cy="235.6" r="2.6"/>
+        <circle cx="203.3" cy="323.9" r="2.6"/>
+        <circle cx="206.1" cy="396.4" r="2.6"/>
+      </svg>
+    </div>
+  <div class="wrap">
+    <p class="venue">IEEE-RAS International Conference on Humanoid Robots &middot; 2026</p>
+    <h1>Controlling the Humanoid Robot H1-2 With a Simulated Biologically Plausible Network</h1>
+
+    <p class="authors">
+      Fatima&nbsp;Atwi &middot; Constant&nbsp;Roux &middot; Christian&nbsp;Bergaud &middot; Olivier&nbsp;Stasse
+    </p>
+    <p class="affil">LAAS-CNRS, Université de Toulouse, CNRS, Toulouse, France</p>
+
+    <nav class="links">
+      <a class="btn primary" href="https://hal.science/hal-05860566">Paper on HAL</a>
+      <a class="btn" href="#experiments">Experiments</a>
+      <a class="btn" href="#bibtex">BibTeX</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="overview">
+    <h2>Overview</h2>
+    <p class="lede">
+      Can a network constrained to resemble a biological neural culture control a full-size
+      humanoid? We build a spiking network of 512 leaky integrate-and-fire neurons arranged as a
+      3D assembly on a microelectrode array, train it by distilling a reinforcement learning
+      expert, and compare four training schemes that differ only in how the error signal reaches
+      the synapses, from a frozen reservoir to exact gradients.
+    </p>
+  </section>
+
+  <figure class="teaser">
+    <img src="assets/hardware.png"
+         alt="Four frames of the Unitree H1-2 humanoid taking steps under the spiking controller">
+    <figcaption>
+      The e-prop-trained spiking network driving the physical Unitree H1-2. The robot
+      produces genuine bipedal stepping for 3&ndash;9&nbsp;s out of 10&nbsp;s episodes.
+    </figcaption>
+  </figure>
+
+ <!--  <ul class="highlights">
+    <li>
+      <span class="stat">100%</span>
+      <span class="stat-label">survival in simulation, matching exact-gradient BPTT</span>
+    </li>
+    <li>
+      <span class="stat">0.99</span>
+      <span class="stat-label">cosine alignment between e-prop and the true gradient</span>
+    </li>
+    <li>
+      <span class="stat">3&ndash;9&nbsp;s</span>
+      <span class="stat-label">of bipedal stepping on the physical H1-2</span>
+    </li>
+  </ul> -->
+
+  <section id="abstract">
+    <h2>Abstract</h2>
+    <p>
+       Biologically inspired neural oscillators have already made humanoid robots walk, spiking
+       networks have controlled simulated humanoids, and spiking models can reproduce the activity
+       of in-vitro neural cultures. Whether a network grounded in such a culture and trained by
+       biologically plausible learning rules can keep a full-size humanoid balanced in closed loop
+       remains, however, an open question. We study this problem by proposing a biologically
+       inspired spiking network, trained by different learning schemes, compared in simulation and
+       deployed on the H1-2 Unitree humanoid. These schemes differ in how recurrent weights are
+       trained. Ordered from most to least biologically faithful, they are: a fixed reservoir
+       mimicking an in-vitro neural culture, where recurrent weights are kept frozen and only a
+       linear readout is trained, the same network but with its synapses trained by
+       reward-modulated spike timing dependent plasticity and eligibility propagation, and finally
+       backpropagation through time as a non biological baseline for comparison. All schemes
+       relied on distillation of a reinforcement learning expert policy with dataset aggregation.
+       In simulation, we show that e-prop reached a 100% survival rate, matching backpropagation
+       through time, whereas both the fixed reservoir and the reward-modulated STDP, though the
+       closest to biological cultures, plateaued at a much lower performance (&sim;43.7% and
+       &sim;11% survival). We explore in further detail which trends a real culture could and
+       could not produce until now. Finally we demonstrate brief bipedal stepping on the full size
+       humanoid H1-2: the e-prop network produces genuine bipedal walking for 3&ndash;9 s, but
+       every hardware trial ended in a fall, so the hardware evaluation remains preliminary and
+       the distilled policy is not yet viable on the real robot.
+    </p>
+  </section>
+
+  <section id="approach">
+    <h2>Approach</h2>
+    <p>
+      The network reads a 45-dimensional observation and produces 12 joint targets at 50&nbsp;Hz,
+      closing the loop around the robot through a PD controller running at 1&nbsp;kHz. It never
+      interacts with a reward: the reinforcement learning expert supplies labelled actions only,
+      first by behavioural cloning and then by DAgger, so the expert corrects the network in the
+      states the network itself visits.
+    </p>
+
+    <figure class="svg-figure">
+      <svg viewBox="0 0 900 230" role="img"
+           aria-label="Closed loop: observation, spiking network, readout, PD controller, robot">
+        <defs>
+          <marker id="a-grey" viewBox="0 0 10 10" refX="9" refY="5"
+                  markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c8798"/>
+          </marker>
+          <marker id="a-blue" viewBox="0 0 10 10" refX="9" refY="5"
+                  markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#1d6fa5"/>
+          </marker>
+        </defs>
+
+        <rect class="sheet" x="0" y="0" width="900" height="230" rx="10"/>
+
+        <g class="pbox">
+          <rect x="22" y="74" width="146" height="64" rx="8"/>
+          <text x="95" y="100">Observation</text>
+          <text x="95" y="121" class="sub">45 dimensions</text>
+        </g>
+
+        <g class="pbox accent">
+          <rect x="206" y="74" width="176" height="64" rx="8"/>
+          <text x="294" y="100">Spiking network</text>
+          <text x="294" y="121" class="sub">512 LIF neurons</text>
+        </g>
+
+        <g class="pbox">
+          <rect x="420" y="74" width="146" height="64" rx="8"/>
+          <text x="493" y="100">Readout</text>
+          <text x="493" y="121" class="sub">12 joint targets</text>
+        </g>
+
+        <g class="pbox">
+          <rect x="604" y="74" width="146" height="64" rx="8"/>
+          <text x="677" y="100">PD controller</text>
+          <text x="677" y="121" class="sub">1 kHz</text>
+        </g>
+
+        <g class="pbox">
+          <rect x="788" y="74" width="92" height="64" rx="8"/>
+          <text x="834" y="100">H1-2</text>
+          <text x="834" y="121" class="sub">27 joints</text>
+        </g>
+
+        <path class="flow" d="M 168 106 H 202" marker-end="url(#a-grey)"/>
+        <path class="flow" d="M 382 106 H 416" marker-end="url(#a-grey)"/>
+        <path class="flow" d="M 566 106 H 600" marker-end="url(#a-grey)"/>
+        <path class="flow" d="M 750 106 H 784" marker-end="url(#a-grey)"/>
+
+        <path class="flow" d="M 834 138 V 186 H 95 V 142" marker-end="url(#a-grey)"/>
+        <text x="465" y="205" class="elabel">feedback</text>
+
+        <path class="flow dash blue" d="M 294 48 V 70" marker-end="url(#a-blue)"/>
+        <text x="294" y="36" class="elabel blue">simulated 3D neural assembly</text>
+
+        <path class="flow dash" d="M 493 48 V 70" marker-end="url(#a-grey)"/>
+        <text x="493" y="36" class="elabel">expert labels: BC then DAgger</text>
+      </svg>
+      <figcaption>
+        The closed loop. Only the spiking network and its readout are learned; the expert
+        contributes labels, never a reward.
+      </figcaption>
+    </figure>
+  </section>
+
+  <section id="schemes">
+    <h2>Learning rules compared</h2>
+    <p>
+      All four schemes train the same network on the same data and receive the same dense,
+      per-timestep error. They differ only in how that error reaches the recurrent weights, which
+      isolates a single question: what does a learning rule need in order to shape a culture-like
+      network into a working controller?
+    </p>
+    <p>
+      The three biologically motivated schemes are shown below. Backpropagation through time is
+      the fourth, included only as an exact-gradient reference against which the local rules are
+      validated; it requires error to travel backward in time, which a real culture cannot do, so
+      it is not a candidate under the biological constraint this work adopts.
+    </p>
+
+    <ul class="scheme-grid">
+      <li class="scheme">
+        <svg viewBox="0 0 420 215" role="img" aria-label="Fixed reservoir">
+        <defs>
+          <marker id="s-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c8798"/>
+          </marker>
+          <marker id="t-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c8798"/>
+          </marker>
+        </defs>
+        <rect class="sheet" x="0" y="0" width="420" height="215" rx="10"/>
+        <text class="ptag" x="158" y="28">recurrent weights frozen</text>
+        <path class="flow" d="M 16 98 H 76" marker-end="url(#s-a)"/>
+        <text class="elabel" x="46" y="118">input</text>
+        <path class="flow" d="M 240 98 H 264" marker-end="url(#s-a)"/>
+        <rect class="readout trained" x="268" y="80" width="66" height="37" rx="7"/>
+        <text class="elabel mid" x="301" y="104">readout</text>
+        <path class="flow" d="M 340 98 H 410" marker-end="url(#s-a)"/>
+        <text class="elabel" x="375" y="118">actions</text>
+        <g class="net frozen">
+          <path d="M 92 86 Q 114 56 136 86"/>
+          <path d="M 136 86 Q 158 56 180 86"/>
+          <path d="M 180 86 Q 202 56 224 86"/>
+          <path d="M 92 86 Q 136 42 180 86"/>
+          <path d="M 136 86 Q 180 42 224 86"/>
+          <circle cx="92" cy="98" r="12"/>
+          <circle cx="136" cy="98" r="12"/>
+          <circle cx="180" cy="98" r="12"/>
+          <circle cx="224" cy="98" r="12"/>
+        </g>
+        <text class="slabel" x="158" y="162">only the readout is fitted</text>
+        </svg>
+        <div class="scheme-text">
+          <h3>Fixed reservoir</h3>
+          <p>Recurrent weights stay at their initial values. Only a linear readout is fitted, in closed form by ridge regression.</p>
+          <p class="scheme-stat">43.7% survival</p>
+        </div>
+      </li>
+      <li class="scheme">
+        <svg viewBox="0 0 420 215" role="img" aria-label="Three-factor STDP">
+        <defs>
+          <marker id="s-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c8798"/>
+          </marker>
+          <marker id="t-b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#7c8798"/>
+          </marker>
+        </defs>
+        <rect class="sheet" x="0" y="0" width="420" height="215" rx="10"/>
+        <text class="ptag" x="158" y="28">recurrent weights trained</text>
+        <path class="flow" d="M 16 98 H 76" marker-end="url(#s-b)"/>
+        <text class="elabel" x="46" y="118">input</text>
+        <path class="flow" d="M 240 98 H 264" marker-end="url(#s-b)"/>
+        <rect class="readout trained" x="268" y="80" width="66" height="37" rx="7"/>
+        <text class="elabel mid" x="301" y="104">readout</text>
+        <path class="flow" d="M 340 98 H 410" marker-end="url(#s-b)"/>
+        <text class="elabel" x="375" y="118">actions</text>
+        <g class="net ">
+          <path d="M 92 86 Q 114 56 136 86"/>
+          <path d="M 136 86 Q 158 56 180 86"/>
+          <path d="M 180 86 Q 202 56 224 86"/>
+          <path d="M 92 86 Q 136 42 180 86"/>
+          <path d="M 136 86 Q 180 42 224 86"/>
+          <circle cx="92" cy="98" r="12"/>
+          <circle cx="136" cy="98" r="12"/>
+          <circle cx="180" cy="98" r="12"/>
+          <circle cx="224" cy="98" r="12"/>
+        </g>
+        <g class="bus">
+          <path d="M 68 152 H 232"/>
+          <path d="M 92 152 V 112" marker-end="url(#t-b)"/>
+          <path d="M 136 152 V 112" marker-end="url(#t-b)"/>
+          <path d="M 180 152 V 112" marker-end="url(#t-b)"/>
+          <path d="M 224 152 V 112" marker-end="url(#t-b)"/>
+        </g>
+        <rect class="sbox" x="10" y="140" width="58" height="25" rx="6"/>
+        <text class="slabel scalar" x="39" y="157">m(t)</text>
+        <text class="slabel" x="158" y="186">one value reaches every synapse</text>
+        </svg>
+        <div class="scheme-text">
+          <h3>Three-factor STDP</h3>
+          <p>A global neuromodulator gates a local eligibility trace. Every synapse receives the same scalar, so a synapse that drove a useful command and one that contributed nothing are treated alike.</p>
+          <p class="scheme-stat">11.2% survival</p>
+        </div>
+      </li>
+      <li class="scheme best">
+        <svg viewBox="0 0 420 215" role="img" aria-label="e-prop">
+        <defs>
+          <marker id="s-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#1d6fa5"/>
+          </marker>
+          <marker id="t-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" fill="#1d6fa5"/>
+          </marker>
+        </defs>
+        <rect class="sheet" x="0" y="0" width="420" height="215" rx="10"/>
+        <text class="ptag" x="158" y="28">recurrent weights trained</text>
+        <path class="flow" d="M 16 98 H 76" marker-end="url(#s-c)"/>
+        <text class="elabel" x="46" y="118">input</text>
+        <path class="flow" d="M 240 98 H 264" marker-end="url(#s-c)"/>
+        <rect class="readout trained" x="268" y="80" width="66" height="37" rx="7"/>
+        <text class="elabel mid" x="301" y="104">readout</text>
+        <path class="flow" d="M 340 98 H 410" marker-end="url(#s-c)"/>
+        <text class="elabel" x="375" y="118">actions</text>
+        <g class="net ">
+          <path d="M 92 86 Q 114 56 136 86"/>
+          <path d="M 136 86 Q 158 56 180 86"/>
+          <path d="M 180 86 Q 202 56 224 86"/>
+          <path d="M 92 86 Q 136 42 180 86"/>
+          <path d="M 136 86 Q 180 42 224 86"/>
+          <circle cx="92" cy="98" r="12"/>
+          <circle cx="136" cy="98" r="12"/>
+          <circle cx="180" cy="98" r="12"/>
+          <circle cx="224" cy="98" r="12"/>
+        </g>
+        <g class="per">
+          <path d="M 92 166 V 112" marker-end="url(#t-c)"/>
+          <path d="M 136 166 V 112" marker-end="url(#t-c)"/>
+          <path d="M 180 166 V 112" marker-end="url(#t-c)"/>
+          <path d="M 224 166 V 112" marker-end="url(#t-c)"/>
+        </g>
+        <text class="slabel blue" x="92" y="186">L&#8321;</text>
+        <text class="slabel blue" x="136" y="186">L&#8322;</text>
+        <text class="slabel blue" x="180" y="186">L&#8323;</text>
+        <text class="slabel blue" x="224" y="186">L&#8324;</text>
+        <text class="slabel" x="158" y="204">a separate signal for each neuron</text>
+        </svg>
+        <div class="scheme-text">
+          <h3>e-prop</h3>
+          <p>Each neuron receives its own learning signal, combined with an eligibility trace held locally at the synapse.</p>
+          <p class="scheme-stat">100% survival</p>
+        </div>
+      </li>
+    </ul>
+
+    <p class="finding">
+      Given identical error information, a single global scalar fails where a per-neuron
+      signal succeeds, and e-prop's updates align with the exact gradient at a cosine
+      similarity of 0.99.
+    </p>
+  </section>
+
+  <section id="results">
+    <h2>Results</h2>
+    <table>
+      <caption>
+        Imitation loss, survival, velocity tracking error and mean firing rate, with the CaT
+        expert as reference. Dashes mark quantities that do not apply, or that cannot be measured
+        because the policy falls before the settling window.
+      </caption>
+      <thead>
+        <tr>
+          <th scope="col">Scheme</th>
+          <th scope="col">BC loss</th>
+          <th scope="col">Survival [%]</th>
+          <th scope="col">Velocity error [m/s]</th>
+          <th scope="col">Rate [Hz]</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="reference">
+          <th scope="row">CaT expert</th>
+          <td>&mdash;</td><td>100.0</td><td>0.09</td><td>&mdash;</td>
+        </tr>
+        <tr>
+          <th scope="row">Fixed reservoir</th>
+          <td>0.112 ± 0.002</td><td>43.7 ± 4.4</td><td>1.27</td><td>10.8</td>
+        </tr>
+        <tr>
+          <th scope="row">BPTT</th>
+          <td>0.065 ± 0.001</td><td>98.0 ± 3.0</td><td>0.73</td><td>10.9</td>
+        </tr>
+        <tr class="best">
+          <th scope="row">e-prop</th>
+          <td>0.063 ± 0.002</td><td>100.0 ± 0.0</td><td>0.71</td><td>10.0</td>
+        </tr>
+        <tr>
+          <th scope="row">Three-factor STDP</th>
+          <td>0.724 ± 0.148</td><td>11.2 ± 1.8</td><td>&mdash;</td><td>158.1</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>
+      Survival saturates for the expert and for e-prop alike, so the velocity tracking error is the
+      metric that separates them: the distilled network keeps the humanoid balanced without
+      following the commanded velocity closely.
+    </p>
+  </section>
+
+  <section id="experiments">
+    <h2>Experiments</h2>
+
+    <p class="subhead">Simulation</p>
+    <ul class="clip-grid">
+      <li>
+        <figure>
+          <video controls muted loop playsinline preload="metadata" src="assets/clips/turning.webm"></video>
+          <figcaption><span class="clip-label">Turning, 0.8 rad/s</span></figcaption>
+        </figure>
+      </li>
+      <li>
+        <figure>
+          <video controls muted loop playsinline preload="metadata" src="assets/clips/sideways.webm"></video>
+          <figcaption><span class="clip-label">Lateral, 0.5 m/s</span></figcaption>
+        </figure>
+      </li>
+    </ul>
+    <p class="clip-note">
+      The e-prop-trained spiking network driving the H1-2 in MuJoCo, rendered from the trained
+      checkpoint.
+    </p>
+
+    <p class="subhead">Hardware</p>
+    <ul class="clip-grid">
+      <li>
+        <figure>
+          <video controls muted loop playsinline preload="metadata" src="assets/clips/vid1.webm"></video>
+          <figcaption><span class="clip-label">Bipedal stepping on the H1-2</span></figcaption>
+        </figure>
+      </li>
+      <li>
+        <figure>
+          <video controls muted loop playsinline preload="metadata" src="assets/clips/vid2.webm"></video>
+          <figcaption><span class="clip-label">Second trial</span></figcaption>
+        </figure>
+      </li>
+      <li>
+        <figure>
+          <video controls muted loop playsinline preload="metadata" src="assets/clips/vid3.webm"></video>
+          <figcaption><span class="clip-label">Third trial</span></figcaption>
+        </figure>
+      </li>
+    </ul>
+  </section>
+
+  <section id="findings">
+    <h2>Key findings</h2>
+    <ul class="findings-list">
+      <li>The decisive factor is per-neuron credit assignment, as a global scalar broadcast to every synapse plateaus at 11.2% survival while
+          e-prop reaches 100%.</li>
+      <li>e-prop performs genuine credit assignment: its updates align with the exact
+          backpropagation-through-time gradient at a cosine similarity of 0.99.</li>
+      <li>A frozen reservoir is not sufficient. With only the readout fitted, the network
+          reaches 43.7% survival, as the readout can form linear combinations of whatever
+          features the fixed dynamics produce.</li>
+      <li>On hardware the exact-gradient policy transfers no better than the biologically
+          plausible one, which attributes the gap to the distillation setup both share rather
+          than to the learning rule.</li>
+      <li>Velocity tracking remains a limitation: 0.71 m/s error against the expert's 0.09 m/s. This is to be further investigated.</li>
+    </ul>
+  </section>
+
+  <section id="bibtex">
+    <h2>BibTeX</h2>
+<pre><code>@inproceedings{atwi:hal-05860566,
+  title     = {{Controlling the Humanoid Robot H1-2 With a Simulated
+                Biologically Plausible Network}},
+  author    = {Atwi, Fatima and Roux, Constant and Bergaud, Christian
+               and Stasse, Olivier},
+  booktitle = {{IEEE RAS Proceedings on International Conference on
+                Humanoid Robots}},
+  address   = {San Francisco (CA, USA), United States},
+  year      = {2026},
+  month     = Dec,
+  url       = {https://hal.science/hal-05860566},
+  hal_id    = {hal-05860566},
+  hal_version = {v1}
+}</code></pre>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap footer-inner">
+    <img class="footer-logo" src="assets/laas-cnrs.png" alt="LAAS-CNRS">
+    <p class="funding">
+      This research was supported by ANITI IA Cluster project 23-IACL-0002 and ANR-19-P3IA-0004,
+      and by the French Robotics Equipex TIRREX (ANR-21-ESRE-0015).
+    </p>
+  </div>
+</footer>
+
+</body>
+</html>
