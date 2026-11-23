@@ -6,6 +6,17 @@
 <title>Controlling the Humanoid Robot H1-2 With a Simulated Biologically Plausible Network</title>
 <meta name="description" content="IEEE-RAS Humanoids 2026. A spiking network grounded in a 3D neural culture, trained by biologically plausible learning rules, controls the Unitree H1-2.">
 <link rel="stylesheet" href="style.css">
+<script>
+  (function () {
+    try {
+      var saved = localStorage.getItem("theme");
+      var prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
+      if (saved === "light" || (!saved && prefersLight)) {
+        document.documentElement.setAttribute("data-theme", "light");
+      }
+    } catch (e) {}
+  })();
+</script>
 </head>
 <body>
 
@@ -21,6 +32,16 @@
       <li><a href="#experiments">Experiments</a></li>
       <li><a class="nav-pdf" href="https://hal.science/hal-05860566">Paper</a></li>
     </ul>
+      <button class="theme-toggle" type="button" id="themeToggle"
+              aria-label="Switch between dark and light theme">
+        <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.2"/>
+          <path d="M12 2.6v2.3M12 19.1v2.3M4.0 4.0l1.6 1.6M18.4 18.4l1.6 1.6M2.6 12h2.3M19.1 12h2.3M4.0 20l1.6-1.6M18.4 5.6L20 4.0"/>
+        </svg>
+      </button>
   </div>
 </nav>
 
@@ -547,19 +568,14 @@
 
   <section id="bibtex">
     <h2>BibTeX</h2>
-<pre><code>@inproceedings{atwi:hal-05860566,
-  title     = {{Controlling the Humanoid Robot H1-2 With a Simulated
-                Biologically Plausible Network}},
-  author    = {Atwi, Fatima and Roux, Constant and Bergaud, Christian
-               and Stasse, Olivier},
-  booktitle = {{IEEE RAS Proceedings on International Conference on
-                Humanoid Robots}},
-  address   = {San Francisco (CA, USA), United States},
+<pre><code>@inproceedings{atwi2026controlling,
+  title     = {{Controlling the Humanoid Robot H1-2 With a Simulated Biologically Plausible Network}},
+  author    = {Atwi, Fatima and Roux, Constant and Bergaud, Christian and Stasse, Olivier},
+  booktitle = {2026 IEEE-RAS 25th International Conference on Humanoid Robots (Humanoids)},
+  address   = {San Francisco, CA, USA},
   year      = {2026},
-  month     = Dec,
-  url       = {https://hal.science/hal-05860566},
-  hal_id    = {hal-05860566},
-  hal_version = {v1}
+  month     = dec,
+  url       = {https://hal.science/hal-05860566}
 }</code></pre>
   </section>
 
@@ -574,6 +590,25 @@
     </p>
   </div>
 </footer>
+
+<script>
+  (function () {
+    var root = document.documentElement;
+    var btn = document.getElementById("themeToggle");
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+      var light = root.getAttribute("data-theme") === "light";
+      if (light) {
+        root.removeAttribute("data-theme");
+      } else {
+        root.setAttribute("data-theme", "light");
+      }
+      try {
+        localStorage.setItem("theme", light ? "dark" : "light");
+      } catch (e) {}
+    });
+  })();
+</script>
 
 </body>
 </html>
